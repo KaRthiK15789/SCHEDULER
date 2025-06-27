@@ -1,6 +1,10 @@
 import streamlit as st
 import requests
 import time
+import os
+
+# 🔁 Your Render backend URL here (DON'T use localhost)
+BACKEND_URL = "https://scheduler-3-165s.onrender.com"
 
 # Configure page
 st.set_page_config(
@@ -31,8 +35,8 @@ for message in st.session_state.messages:
 
 # Chat input
 if prompt := st.chat_input("Type your message here..."):
+    # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
-
     with st.chat_message("user"):
         st.markdown(prompt)
 
@@ -41,7 +45,7 @@ if prompt := st.chat_input("Type your message here..."):
         with st.spinner("Thinking..."):
             try:
                 response = requests.post(
-                    "https://scheduler-3-165s.onrender.com/chat",  # ✅ use your deployed backend URL
+                    f"{BACKEND_URL}/chat",
                     json={
                         "message": prompt,
                         "conversation_id": st.session_state.conversation_id
@@ -52,12 +56,15 @@ if prompt := st.chat_input("Type your message here..."):
                 if response.status_code == 200:
                     data = response.json()
                     assistant_message = data.get("response", "I'm sorry, I couldn't process that request.")
+
                     st.markdown(assistant_message)
+
                     st.session_state.messages.append({
                         "role": "assistant",
                         "content": assistant_message
                     })
 
+                    # Booking info
                     if data.get("booking_confirmed"):
                         st.success("✅ Appointment booked successfully!")
                         booking_details = data.get("booking_details", {})
@@ -67,19 +74,17 @@ if prompt := st.chat_input("Type your message here..."):
                                     f"- Time: {booking_details.get('time', 'N/A')}\n"
                                     f"- Duration: {booking_details.get('duration', 'N/A')} minutes")
                 else:
-                    error_msg = "Sorry, I'm having trouble connecting to my booking system. Please try again."
-                    st.markdown(error_msg)
+                    st.error("❌ Backend error. Please try again.")
                     st.session_state.messages.append({
                         "role": "assistant",
-                        "content": error_msg
+                        "content": "Sorry, I'm having trouble connecting to my booking system. Please try again."
                     })
 
-            except requests.exceptions.RequestException:
-                error_msg = "I'm experiencing some technical difficulties. Please try again in a moment."
-                st.markdown(error_msg)
+            except requests.exceptions.RequestException as e:
+                st.error(f"❌ Failed to connect to backend: {e}")
                 st.session_state.messages.append({
                     "role": "assistant",
-                    "content": error_msg
+                    "content": "Sorry, I'm having trouble connecting to my booking system. Please try again."
                 })
 
 # Sidebar
@@ -96,7 +101,7 @@ with st.sidebar:
     - "I need to book a meeting tomorrow afternoon"
     - "Do you have any free time this Friday?"
     - "Schedule a 30-minute call next week"
-    - "What's available between 2–4 PM on Monday?"
+    - "What's available between 2-4 PM on Monday?"
     """)
 
     st.header("🔄 Actions")
