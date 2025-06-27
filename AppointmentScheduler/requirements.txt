@@ -1,11 +1,11 @@
-# Streamlit (frontend)
-streamlit
-
-# FastAPI (backend)
+# FastAPI backend
 fastapi
 uvicorn[standard]
 
-# Common utilities
+# Shared
 requests
 pydantic
-aiofiles  # if serving static files or uploads
+aiofiles
+
+# Optional: If you want to test Streamlit locally or just deploy both
+streamlit
