@@ -70,7 +70,7 @@ if prompt := st.chat_input("Type your message here..."):
         with st.spinner("Thinking..."):
             try:
                 response = requests.post(
-                    "http://localhost:8000/chat",
+                    "https://scheduler-3-165s.onrender.com/chat",
                     json={
                         "message": prompt,
                         "conversation_id": st.session_state.conversation_id
