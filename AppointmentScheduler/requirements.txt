@@ -1,11 +1,6 @@
-# FastAPI backend
+streamlit
 fastapi
-uvicorn[standard]
-
-# Shared
+uvicorn
 requests
 pydantic
-aiofiles
-
-# Optional: If you want to test Streamlit locally or just deploy both
-streamlit
+python-dotenv
