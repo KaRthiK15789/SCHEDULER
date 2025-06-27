@@ -12,14 +12,16 @@ import os
 def start_backend():
     """Start the FastAPI backend server"""
     try:
-        subprocess.Popen([
-            sys.executable, "-m", "uvicorn", 
-            "backend.main:app", 
-            "--host", "0.0.0.0", 
+        result = subprocess.Popen([
+            sys.executable, "-m", "uvicorn",
+            "backend.main:app",
+            "--host", "0.0.0.0",
             "--port", "8000"
-        ])
+        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        time.sleep(2)
+        st.write("✅ Backend started")
     except Exception as e:
-        st.error(f"Failed to start backend: {e}")
+        st.error(f"❌ Failed to start backend: {e}")
 
 # Initialize backend on first run
 if 'backend_started' not in st.session_state:
