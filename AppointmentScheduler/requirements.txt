@@ -1,4 +1,11 @@
+# Streamlit (frontend)
 streamlit
-requests
+
+# FastAPI (backend)
 fastapi
-uvicorn
+uvicorn[standard]
+
+# Common utilities
+requests
+pydantic
+aiofiles  # if serving static files or uploads
