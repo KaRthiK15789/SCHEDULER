@@ -3,6 +3,3 @@ fastapi
 uvicorn
 requests
 pydantic
-python-dotenv
-aiofiles
-  
