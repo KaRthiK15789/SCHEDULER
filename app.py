@@ -1,34 +1,6 @@
 import streamlit as st
 import requests
-import json
-from datetime import datetime
 import time
-import threading
-import subprocess
-import sys
-import os
-
-# Start FastAPI backend in a separate thread
-def start_backend():
-    """Start the FastAPI backend server"""
-    try:
-        result = subprocess.Popen([
-            sys.executable, "-m", "uvicorn",
-            "backend.main:app",
-            "--host", "0.0.0.0",
-            "--port", "8000"
-        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        time.sleep(2)
-        st.write("✅ Backend started")
-    except Exception as e:
-        st.error(f"❌ Failed to start backend: {e}")
-
-# Initialize backend on first run
-if 'backend_started' not in st.session_state:
-    start_backend()
-    st.session_state.backend_started = True
-    # Give backend time to start
-    time.sleep(3)
 
 # Configure page
 st.set_page_config(
@@ -59,48 +31,41 @@ for message in st.session_state.messages:
 
 # Chat input
 if prompt := st.chat_input("Type your message here..."):
-    # Add user message to chat
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
+
     with st.chat_message("user"):
         st.markdown(prompt)
-    
+
     # Get response from backend
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
                 response = requests.post(
-                    "https://scheduler-3-165s.onrender.com/chat",
+                    "https://scheduler-3-165s.onrender.com/chat",  # ✅ use your deployed backend URL
                     json={
                         "message": prompt,
                         "conversation_id": st.session_state.conversation_id
                     },
                     timeout=30
                 )
-                
+
                 if response.status_code == 200:
                     data = response.json()
                     assistant_message = data.get("response", "I'm sorry, I couldn't process that request.")
-                    
-                    # Display response
                     st.markdown(assistant_message)
-                    
-                    # Add to message history
                     st.session_state.messages.append({
                         "role": "assistant",
                         "content": assistant_message
                     })
-                    
-                    # Show booking confirmation if available
+
                     if data.get("booking_confirmed"):
                         st.success("✅ Appointment booked successfully!")
                         booking_details = data.get("booking_details", {})
                         if booking_details:
                             st.info(f"**Booking Details:**\n"
-                                   f"- Date: {booking_details.get('date', 'N/A')}\n"
-                                   f"- Time: {booking_details.get('time', 'N/A')}\n"
-                                   f"- Duration: {booking_details.get('duration', 'N/A')} minutes")
-                
+                                    f"- Date: {booking_details.get('date', 'N/A')}\n"
+                                    f"- Time: {booking_details.get('time', 'N/A')}\n"
+                                    f"- Duration: {booking_details.get('duration', 'N/A')} minutes")
                 else:
                     error_msg = "Sorry, I'm having trouble connecting to my booking system. Please try again."
                     st.markdown(error_msg)
@@ -108,8 +73,8 @@ if prompt := st.chat_input("Type your message here..."):
                         "role": "assistant",
                         "content": error_msg
                     })
-                    
-            except requests.exceptions.RequestException as e:
+
+            except requests.exceptions.RequestException:
                 error_msg = "I'm experiencing some technical difficulties. Please try again in a moment."
                 st.markdown(error_msg)
                 st.session_state.messages.append({
@@ -117,7 +82,7 @@ if prompt := st.chat_input("Type your message here..."):
                     "content": error_msg
                 })
 
-# Sidebar with helpful information
+# Sidebar
 with st.sidebar:
     st.header("💡 Tips")
     st.markdown("""
@@ -126,14 +91,14 @@ with st.sidebar:
     - Check availability
     - Find suitable time slots
     - Confirm bookings
-    
+
     **Example requests:**
     - "I need to book a meeting tomorrow afternoon"
     - "Do you have any free time this Friday?"
     - "Schedule a 30-minute call next week"
-    - "What's available between 2-4 PM on Monday?"
+    - "What's available between 2–4 PM on Monday?"
     """)
-    
+
     st.header("🔄 Actions")
     if st.button("Clear Chat History"):
         st.session_state.messages = [
