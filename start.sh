@@ -4,7 +4,7 @@
 PORT=${PORT:-5000}
 
 # Start the FastAPI backend in the background on port 8000
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+python -m backend.main --host 0.0.0.0 --port 8000 &
 
 # Wait for backend to start
 sleep 10
