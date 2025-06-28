@@ -3,7 +3,7 @@
 # Get the port from environment or default to 5000
 PORT=${PORT:-5000}
 
-cd SCHEDULER
+cd "$(dirname "$0")"
 
 # Set PYTHONPATH so backend is findable
 export PYTHONPATH=.
