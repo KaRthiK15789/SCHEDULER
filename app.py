@@ -4,7 +4,7 @@ import time
 import os
 
 # 🔁 Your Render backend URL here (DON'T use localhost)
-BACKEND_URL = "https://scheduler-4-1g2x.onrender.com"
+BACKEND_URL = "http://127.0.0.1:8000"
 
 # Configure page
 st.set_page_config(
