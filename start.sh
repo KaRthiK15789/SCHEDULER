@@ -1,18 +1,16 @@
 #!/bin/bash
 
-# Get the port from environment or default to 5000
-PORT=${PORT:-5000}
+# Go into SCHEDULER directory
+cd SCHEDULER
 
-cd "$(dirname "$0")"
-
-# Set PYTHONPATH so backend is findable
+# Make sure Python can find backend
 export PYTHONPATH=.
 
 # Start FastAPI backend
 python -m backend.main --host 0.0.0.0 --port 8000 &
 
-# Wait for backend to boot up
+# Wait for backend to boot
 sleep 10
 
-# Start Streamlit
+# Start Streamlit app
 streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
